@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assessment Portal</title>
+<style>
+  :root{
+    --navy-950:#0b1220;
+    --navy-900:#111a2e;
+    --navy-800:#182645;
+    --navy-700:#22335c;
+    --ink-900:#101828;
+    --ink-600:#475467;
+    --ink-400:#98a2b3;
+    --paper:#f6f7fb;
+    --card:#ffffff;
+    --line:#e4e7ee;
+    --teal-600:#0f766e;
+    --teal-500:#14b8a6;
+    --teal-100:#e6fbf8;
+    --amber-500:#f59e0b;
+    --danger:#dc2626;
+    --shadow-sm:0 1px 2px rgba(16,24,40,.06);
+    --shadow-md:0 8px 24px rgba(16,24,40,.10);
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Inter, Roboto, Arial, sans-serif;
+    background:var(--paper);
+    color:var(--ink-900);
+  }
+  /* ---------- LOGIN ---------- */
+  #login-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(1200px 600px at 15% 10%, #16264a 0%, transparent 60%),
+      radial-gradient(1000px 500px at 90% 90%, #0f3d38 0%, transparent 55%),
+      linear-gradient(160deg, var(--navy-950), var(--navy-900) 55%, #0c1a1a 100%);
+    padding:24px;
+  }
+  .login-card{
+    width:100%;
+    max-width:400px;
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:0 30px 60px rgba(0,0,0,.35);
+    overflow:hidden;
+  }
+  .login-brand{
+    padding:28px 32px 20px;
+    background:linear-gradient(135deg, var(--navy-900), var(--teal-600));
+    color:#fff;
+  }
+  .login-brand .mark{
+    width:40px;height:40px;border-radius:10px;
+    background:rgba(255,255,255,.15);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:18px;letter-spacing:.5px;
+    margin-bottom:14px;
+    border:1px solid rgba(255,255,255,.25);
+  }
+  .login-brand h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.2px;}
+  .login-brand p{margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.75);}
+  .login-body{padding:28px 32px 32px;}
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;font-size:12.5px;font-weight:600;color:var(--ink-600);
+    margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;
+  }
+  .field input{
+    width:100%;padding:11px 13px;border-radius:9px;
+    border:1.5px solid var(--line);
+    font-size:14.5px;color:var(--ink-900);
+    background:#fbfcfe;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus{
+    outline:none;border-color:var(--teal-500);
+    box-shadow:0 0 0 3px var(--teal-100);
+    background:#fff;
+  }
+  #login-error{
+    display:none;
+    background:#fef2f2;color:var(--danger);
+    border:1px solid #fecaca;
+    padding:9px 12px;border-radius:8px;
+    font-size:13px;margin-bottom:16px;
+  }
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border:none;border-radius:9px;cursor:pointer;
+    font-size:14.5px;font-weight:600;
+    padding:11px 18px;
+    transition:transform .05s ease, box-shadow .15s, background .15s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{
+    width:100%;
+    background:linear-gradient(135deg, var(--teal-600), var(--teal-500));
+    color:#fff;
+    box-shadow:0 8px 20px rgba(15,118,110,.28);
+  }
+  .btn-primary:hover{box-shadow:0 10px 24px rgba(15,118,110,.4);}
+  .login-hint{
+    margin-top:18px;text-align:center;font-size:12px;color:var(--ink-400);
+  }
+
+  /* ---------- APP SHELL ---------- */
+  #app-screen{display:none;min-height:100vh;}
+  .shell{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:250px;flex-shrink:0;
+    background:linear-gradient(180deg, var(--navy-950), var(--navy-900));
+    color:#fff;
+    display:flex;flex-direction:column;
+    position:sticky;top:0;height:100vh;
+  }
+  .sidebar-brand{
+    padding:22px 22px 18px;
+    display:flex;align-items:center;gap:10px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-brand .mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg, var(--teal-500), var(--teal-600));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:14px;
+  }
+  .sidebar-brand span{font-weight:700;font-size:15px;letter-spacing:.2px;}
+  .nav{padding:16px 12px;flex:1;}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 14px;border-radius:9px;
+    color:rgba(255,255,255,.68);
+    cursor:pointer;font-size:14px;font-weight:500;
+    margin-bottom:4px;
+    transition:background .15s, color .15s;
+    user-select:none;
+    border-left:3px solid transparent;
+  }
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .nav-item.active{
+    background:rgba(20,184,166,.14);
+    color:#fff;
+    border-left:3px solid var(--teal-500);
+  }
+  .nav-item .ico{
+    width:20px;height:20px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+  }
+  .nav-item .num{
+    font-size:11px;color:var(--ink-400);
+    background:rgba(255,255,255,.06);
+    border-radius:5px;width:18px;height:18px;
+    display:flex;align-items:center;justify-content:center;
+    margin-right:2px;
+  }
+  .sidebar-foot{
+    padding:16px 22px;font-size:11px;color:rgba(255,255,255,.35);
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .topbar{
+    height:66px;flex-shrink:0;
+    background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;
+    position:sticky;top:0;z-index:10;
+  }
+  .topbar-title{font-size:17px;font-weight:700;color:var(--ink-900);}
+  .topbar-sub{font-size:12.5px;color:var(--ink-400);margin-top:1px;}
+
+  .profile-wrap{position:relative;}
+  .profile-btn{
+    display:flex;align-items:center;gap:10px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:6px 14px 6px 6px;border-radius:24px;
+    cursor:pointer;
+    transition:background .15s;
+  }
+  .profile-btn:hover{background:#eef0f5;}
+  .avatar{
+    width:32px;height:32px;border-radius:50%;
+    background:linear-gradient(135deg, var(--teal-500), var(--navy-700));
+    color:#fff;font-weight:700;font-size:13px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .profile-btn .who{font-size:13.5px;font-weight:600;color:var(--ink-900);}
+  .profile-btn .chev{font-size:10px;color:var(--ink-400);margin-left:2px;}
+
+  .profile-menu{
+    position:absolute;top:calc(100% + 8px);right:0;
+    width:190px;background:#fff;
+    border:1px solid var(--line);border-radius:10px;
+    box-shadow:var(--shadow-md);
+    display:none;overflow:hidden;
+    z-index:20;
+  }
+  .profile-menu.open{display:block;}
+  .profile-menu .pm-head{
+    padding:12px 14px;border-bottom:1px solid var(--line);
+  }
+  .profile-menu .pm-head .name{font-size:13.5px;font-weight:700;}
+  .profile-menu .pm-head .role{font-size:11.5px;color:var(--ink-400);}
+  .profile-menu .pm-item{
+    padding:11px 14px;font-size:13.5px;font-weight:600;
+    color:var(--danger);cursor:pointer;
+    display:flex;align-items:center;gap:8px;
+    transition:background .15s;
+  }
+  .profile-menu .pm-item:hover{background:#fef2f2;}
+
+  .content{padding:26px 28px 40px;flex:1;}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);
+  }
+  .card-pad{padding:22px 24px;}
+  .card-title{font-size:15.5px;font-weight:700;margin:0 0 4px;}
+  .card-desc{font-size:13px;color:var(--ink-400);margin:0 0 20px;}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
+  @media (max-width:720px){.form-grid{grid-template-columns:1fr;}}
+  .form-grid .field textarea{
+    width:100%;padding:11px 13px;border-radius:9px;
+    border:1.5px solid var(--line);font-size:14px;
+    font-family:inherit;resize:vertical;min-height:44px;
+    background:#fbfcfe;
+  }
+  .form-grid .field textarea:focus{
+    outline:none;border-color:var(--teal-500);
+    box-shadow:0 0 0 3px var(--teal-100);background:#fff;
+  }
+
+  .btn-teal{
+    background:linear-gradient(135deg, var(--teal-600), var(--teal-500));
+    color:#fff;box-shadow:0 6px 14px rgba(15,118,110,.25);
+  }
+  .btn-teal:hover{box-shadow:0 8px 18px rgba(15,118,110,.35);}
+  .btn-ghost{
+    background:#fff;color:var(--ink-600);border:1.5px solid var(--line);
+  }
+  .btn-ghost:hover{background:var(--paper);}
+
+  table{width:100%;border-collapse:collapse;margin-top:6px;}
+  thead th{
+    text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;
+    color:var(--ink-400);font-weight:700;
+    padding:10px 14px;border-bottom:1.5px solid var(--line);
+    background:var(--paper);
+  }
+  thead th:first-child{border-top-left-radius:8px;}
+  thead th:last-child{border-top-right-radius:8px;}
+  tbody td{
+    padding:13px 14px;font-size:13.5px;color:var(--ink-900);
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tbody tr:hover{background:#fafbfe;}
+  tbody tr:last-child td{border-bottom:none;}
+  .desc-cell{color:var(--ink-600);max-width:360px;}
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;
+    background:var(--teal-100);color:var(--teal-600);
+    font-size:11.5px;font-weight:700;
+    padding:3px 9px;border-radius:20px;
+  }
+  .row-num{color:var(--ink-400);font-weight:600;}
+
+  /* generic placeholder pages */
+  .placeholder{
+    display:flex;flex-direction:column;align-items:flex-start;
+    padding:50px 10px;
+  }
+  .placeholder .ico-big{
+    width:52px;height:52px;border-radius:12px;
+    background:var(--teal-100);color:var(--teal-600);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;margin-bottom:18px;
+  }
+  .placeholder h2{margin:0 0 8px;font-size:19px;}
+  .placeholder p{margin:0;color:var(--ink-400);font-size:13.5px;max-width:480px;line-height:1.6;}
+
+  ::selection{background:var(--teal-100);}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="mark">AP</div>
+      <h1>Assessment Portal</h1>
+      <p>Sign in to manage sections, topics and assessments</p>
+    </div>
+    <div class="login-body">
+      <div id="login-error">Invalid username or password. Please try again.</div>
+      <form id="login-form" autocomplete="off">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
+        </div>
+        <div class="field" style="margin-bottom:22px;">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+      </form>
+      <div class="login-hint">Use <strong>praveen</strong> / <strong>praveen</strong> to sign in</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP SCREEN ================= -->
+<div id="app-screen">
+  <div class="shell">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-brand">
+        <div class="mark">AP</div>
+        <span>Assessment Portal</span>
+      </div>
+      <div class="nav">
+        <div class="nav-item active" data-page="section"><span class="num">1</span> Section</div>
+        <div class="nav-item" data-page="topic"><span class="num">2</span> Topic</div>
+        <div class="nav-item" data-page="question"><span class="num">3</span> Question</div>
+        <div class="nav-item" data-page="assessment"><span class="num">4</span> Assessment</div>
+        <div class="nav-item" data-page="report"><span class="num">5</span> Report</div>
+      </div>
+      <div class="sidebar-foot">&copy; 2026 Assessment Portal</div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title" id="topbar-title">Section</div>
+          <div class="topbar-sub" id="topbar-sub">Create and manage assessment sections</div>
+        </div>
+        <div class="profile-wrap">
+          <div class="profile-btn" id="profile-btn">
+            <div class="avatar">P</div>
+            <span class="who">Praveen</span>
+            <span class="chev">&#9662;</span>
+          </div>
+          <div class="profile-menu" id="profile-menu">
+            <div class="pm-head">
+              <div class="name">Praveen</div>
+              <div class="role">Administrator</div>
+            </div>
+            <div class="pm-item" id="logout-btn">&#8631; Logout</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- SECTION PAGE -->
+        <div class="page active" id="page-section">
+          <div class="card card-pad">
+            <h3 class="card-title">Add Section</h3>
+            <p class="card-desc">Create a new section with a name and description.</p>
+            <div class="form-grid">
+              <div class="field">
+                <label for="section-name">Section Name</label>
+                <input type="text" id="section-name" placeholder="e.g. Aptitude">
+              </div>
+              <div class="field">
+                <label for="section-desc">Description</label>
+                <textarea id="section-desc" placeholder="Short description of this section"></textarea>
+              </div>
+            </div>
+            <button class="btn btn-teal" id="save-section-btn">+ Save Section</button>
+          </div>
+
+          <div class="card card-pad" style="margin-top:20px;">
+            <h3 class="card-title">All Sections</h3>
+            <p class="card-desc">List of sections currently available in the system.</p>
+            <table>
+              <thead>
+                <tr><th style="width:46px;">#</th><th>Section Name</th><th>Description</th><th style="width:110px;">Status</th></tr>
+              </thead>
+              <tbody id="section-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TOPIC PAGE -->
+        <div class="page" id="page-topic">
+          <div class="card card-pad">
+            <div class="placeholder">
+              <div class="ico-big">&#128218;</div>
+              <h2>Topic</h2>
+              <p>Manage topics linked to each section here. This area is ready for topic setup — content will appear once configured.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUESTION PAGE -->
+        <div class="page" id="page-question">
+          <div class="card card-pad">
+            <div class="placeholder">
+              <div class="ico-big">&#10067;</div>
+              <h2>Question</h2>
+              <p>Build and manage your question bank here. This area is ready for question setup — content will appear once configured.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ASSESSMENT PAGE -->
+        <div class="page" id="page-assessment">
+          <div class="card card-pad">
+            <div class="placeholder">
+              <div class="ico-big">&#128203;</div>
+              <h2>Assessment</h2>
+              <p>Create and configure assessments using your sections, topics and questions. This area is ready for setup.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORT PAGE -->
+        <div class="page" id="page-report">
+          <div class="card card-pad">
+            <div class="placeholder">
+              <div class="ico-big">&#128202;</div>
+              <h2>Report</h2>
+              <p>View assessment results and performance reports here. This area is ready for reporting once data is available.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- LOGIN ----------
+  const loginForm = document.getElementById('login-form');
+  const loginScreen = document.getElementById('login-screen');
+  const appScreen = document.getElementById('app-screen');
+  const loginError = document.getElementById('login-error');
+
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value.trim();
+    if(u === 'praveen' && p === 'praveen'){
+      loginError.style.display = 'none';
+      loginScreen.style.display = 'none';
+      appScreen.style.display = 'block';
+    } else {
+      loginError.style.display = 'block';
+    }
+  });
+
+  // ---------- NAV / PAGE ROUTING ----------
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = document.querySelectorAll('.page');
+  const titles = {
+    section: ['Section', 'Create and manage assessment sections'],
+    topic: ['Topic', 'Organize topics within each section'],
+    question: ['Question', 'Manage your question bank'],
+    assessment: ['Assessment', 'Configure and publish assessments'],
+    report: ['Report', 'Track results and performance']
+  };
+
+  navItems.forEach(item => {
+    item.addEventListener('click', function(){
+      navItems.forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+      const key = this.getAttribute('data-page');
+      pages.forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + key).classList.add('active');
+      document.getElementById('topbar-title').textContent = titles[key][0];
+      document.getElementById('topbar-sub').textContent = titles[key][1];
+    });
+  });
+
+  // ---------- PROFILE MENU ----------
+  const profileBtn = document.getElementById('profile-btn');
+  const profileMenu = document.getElementById('profile-menu');
+  profileBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    profileMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', function(){
+    profileMenu.classList.remove('open');
+  });
+
+  // ---------- LOGOUT ----------
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    appScreen.style.display = 'none';
+    loginScreen.style.display = 'flex';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    loginError.style.display = 'none';
+    // reset to section page for next login
+    navItems.forEach(n => n.classList.remove('active'));
+    document.querySelector('.nav-item[data-page="section"]').classList.add('active');
+    pages.forEach(p => p.classList.remove('active'));
+    document.getElementById('page-section').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Section';
+    document.getElementById('topbar-sub').textContent = 'Create and manage assessment sections';
+  });
+
+  // ---------- SECTION CRUD ----------
+  let sections = [
+    { name: 'Aptitude', desc: 'General quantitative and logical reasoning questions.' },
+    { name: 'Verbal Ability', desc: 'English grammar, vocabulary and comprehension.' },
+    { name: 'Technical - Programming', desc: 'Core programming and problem solving concepts.' },
+    { name: 'Software Testing', desc: 'Manual and automation testing fundamentals.' },
+    { name: 'Communication Skills', desc: 'Spoken and written communication assessment.' }
+  ];
+
+  const sectionTableBody = document.getElementById('section-table-body');
+  const sectionNameInput = document.getElementById('section-name');
+  const sectionDescInput = document.getElementById('section-desc');
+
+  function renderSections(){
+    sectionTableBody.innerHTML = '';
+    sections.forEach((s, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="row-num">' + (idx + 1) + '</td>' +
+        '<td><strong>' + escapeHtml(s.name) + '</strong></td>' +
+        '<td class="desc-cell">' + escapeHtml(s.desc) + '</td>' +
+        '<td><span class="badge">&#9679; Active</span></td>';
+      sectionTableBody.appendChild(tr);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById('save-section-btn').addEventListener('click', function(){
+    const name = sectionNameInput.value.trim();
+    const desc = sectionDescInput.value.trim();
+    if(!name || !desc){
+      alert('Please enter both section name and description.');
+      return;
+    }
+    sections.push({ name: name, desc: desc });
+    renderSections();
+    sectionNameInput.value = '';
+    sectionDescInput.value = '';
+    sectionNameInput.focus();
+  });
+
+  renderSections();
+</script>
+
+</body>
+</html>
